@@ -1,0 +1,737 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.10.1.973/W32 for MSP430           27/Sep/2017  14:28:43
+# Copyright 1996-2017 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 7.10
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\shapes.c
+#    Command line  =  
+#        -f C:\Users\jchesebr\AppData\Local\Temp\EW8D8F.tmp
+#        ("\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\shapes.c"
+#        -lC "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List" -o
+#        "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\Debug\Obj"
+#        --debug -D__MSP430FR5994__ -e --double=32 --dlib_config "C:\Program
+#        Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\430\lib\dlib\dl430xlsfn.h" --core=430X --data_model=small -Oh
+#        --multiplier=32 --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List\shapes.lst
+#    Object file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\Obj\shapes.r43
+#
+###############################################################################
+
+\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\shapes.c
+      1          //J Barrett Chesebrough
+      2          //shapes.c
+      3          //movement functions for run_straight, run_rectangle, run_circle, run_figure_eight, run_triangle
+      4          //movement state machines
+      5          
+      6          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x222
+   \   union <unnamed> _A_PBOUT_L
+   \                     _A_PBOUT_L:
+   \   000000                DS8 2
+      7          #include  "functions.h"
+      8          #include <string.h>
+      9          #include "macros.h"
+     10          
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     11          char Last_Time_Sequence;
+   \                     Last_Time_Sequence:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     12          char cycle_time;
+   \                     cycle_time:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     13          char time_change;
+   \                     time_change:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     14          volatile char event;
+   \                     event:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     15          int delay_start;
+   \                     delay_start:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     16          volatile char state;
+   \                     state:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     17          int segment_count;
+   \                     segment_count:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     18          int right_motor_count;
+   \                     right_motor_count:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     19          int left_motor_count;
+   \                     left_motor_count:
+   \   000000                DS8 2
+     20          //extern volatile unsigned int Time_Sequence;
+     21          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     22          void start_case(void)
+   \                     start_case:
+     23          {
+     24           cycle_time = 0;
+   \   000000                REQUIRE ?Subroutine0
+   \   000000                REQUIRE _A_PBOUT_L
+   \   000000                // Fall through to label ?Subroutine0
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine0:
+   \   000000   ........     CALLA   #?Subroutine7
+     25           right_motor_count = 0;
+     26           left_motor_count = 0;
+     27           Forward_On();
+   \                     ??CrossCallReturnLabel_7:
+   \   000004   ........     CALLA   #?Subroutine5
+     28           segment_count = 0;
+   \                     ??CrossCallReturnLabel_3:
+   \   000008   8243....     MOV.W   #0x0, &segment_count
+     29           state = RUN;
+   \   00000C   F2405200.... MOV.B   #0x52, &state
+     30          }
+   \   000012   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine7:
+   \   000000   C243....     MOV.B   #0x0, &cycle_time
+   \   000004   8243....     MOV.W   #0x0, &right_motor_count
+   \   000008   8243....     MOV.W   #0x0, &left_motor_count
+   \   00000C   1001         RETA
+     31          
+     32          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     33          void wait_case(void)
+   \                     wait_case:
+     34          {
+     35           if(time_change)
+   \   000000   C293....     CMP.B   #0x0, &time_change
+   \   000004   1024         JEQ     ??wait_case_0
+     36           {
+     37             time_change = 0;
+   \   000006   C243....     MOV.B   #0x0, &time_change
+     38             if(delay_start++ >= WAITING2START)
+   \   00000A   1F42....     MOV.W   &delay_start, R15
+   \   00000E   0E4F         MOV.W   R15, R14
+   \   000010   1E53         ADD.W   #0x1, R14
+   \   000012   824E....     MOV.W   R14, &delay_start
+   \   000016   3F903200     CMP.W   #0x32, R15
+   \   00001A   0538         JL      ??wait_case_0
+     39             {
+     40               delay_start = 0;
+   \   00001C   8243....     MOV.W   #0x0, &delay_start
+     41               state = START;
+   \   000020   F2405300.... MOV.B   #0x53, &state
+     42             }
+     43           }
+     44          }
+   \                     ??wait_case_0:
+   \   000026   1001         RETA
+     45          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     46          void run_case(void)
+   \                     run_case:
+     47          {
+     48            if(time_change)
+   \   000000   C293....     CMP.B   #0x0, &time_change
+   \   000004   1424         JEQ     ??run_case_2
+     49            {
+     50              time_change = 0;
+   \   000006   C243....     MOV.B   #0x0, &time_change
+     51              if(segment_count <= TRAVEL_DISTANCE)
+   \   00000A   B2900B00.... CMP.W   #0xb, &segment_count
+   \   000010   0B34         JGE     ??run_case_3
+     52              {
+     53                if(right_motor_count++ >= RIGHT_COUNT_TIME)
+   \   000012   ........     CALLA   #?Subroutine9
+   \                     ??CrossCallReturnLabel_11:
+   \   000016   3F900700     CMP.W   #0x7, R15
+   \   00001A   ........     CALLA   #?Subroutine6
+     54                {
+     55                  P3OUT &= ~R_FORWARD;
+     56                }
+     57                if(left_motor_count++ >= LEFT_COUNT_TIME)
+   \                     ??CrossCallReturnLabel_5:
+   \   00001E   3F92         CMP.W   #0x8, R15
+   \   000020   ........     CALLA   #?Subroutine4
+     58                {
+     59                  P3OUT &= ~L_FORWARD;
+     60                }
+     61                if(cycle_time >= WHEEL_COUNT_TIME)
+   \                     ??CrossCallReturnLabel_0:
+   \   000024   0428         JNC     ??run_case_2
+     62                {
+     63                  cycle_time = 0;
+   \   000026   ....         JMP     ?Subroutine1
+     64                  right_motor_count = 0;
+     65                  left_motor_count = 0;
+     66                  segment_count++;
+     67                  Forward_Move();
+     68                }
+     69              }
+     70              else
+     71              {
+     72                state = END;
+   \                     ??run_case_3:
+   \   000028   F2404500.... MOV.B   #0x45, &state
+     73              }
+     74            }
+     75          }
+   \                     ??run_case_2:
+   \   00002E   1001         RETA
+   \   000030                REQUIRE _A_PBOUT_L
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine1:
+   \   000000   ........     CALLA   #?Subroutine7
+   \                     ??CrossCallReturnLabel_8:
+   \   000004   9253....     ADD.W   #0x1, &segment_count
+   \   000008   ....         JMP     ?Subroutine5
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine5:
+   \   000000   F2D080002202 BIS.B   #0x80, &0x222
+   \   000006   F2D020002202 BIS.B   #0x20, &0x222
+   \   00000C   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine9:
+   \   000000   1F42....     MOV.W   &right_motor_count, R15
+   \   000004   0E4F         MOV.W   R15, R14
+   \   000006   1E53         ADD.W   #0x1, R14
+   \   000008   824E....     MOV.W   R14, &right_motor_count
+   \   00000C   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine6:
+   \   000000   0338         JL      ??run_case_1
+   \   000002   F2C080002202 BIC.B   #0x80, &0x222
+   \                     ??run_case_1:
+   \   000008   1F42....     MOV.W   &left_motor_count, R15
+   \   00000C   0E4F         MOV.W   R15, R14
+   \   00000E   1E53         ADD.W   #0x1, R14
+   \   000010   824E....     MOV.W   R14, &left_motor_count
+   \   000014   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine4:
+   \   000000   0338         JL      ??run_case_0
+   \   000002   F2C020002202 BIC.B   #0x20, &0x222
+   \                     ??run_case_0:
+   \   000008   F2900A00.... CMP.B   #0xa, &cycle_time
+   \   00000E   1001         RETA
+     76          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     77          void end_case(void)
+   \                     end_case:
+     78          {
+     79           Forward_Off();
+   \   000000                REQUIRE ?Subroutine2
+   \   000000                REQUIRE _A_PBOUT_L
+   \   000000                // Fall through to label ?Subroutine2
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine2:
+   \   000000   ........     CALLA   #?Subroutine11
+     80           state = WAIT;
+   \                     ??CrossCallReturnLabel_15:
+   \   000004   F2405700.... MOV.B   #0x57, &state
+     81           event = NONE;
+   \   00000A   F2404E00.... MOV.B   #0x4e, &event
+     82          }
+   \   000010   1001         RETA
+     83          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     84          void Forward_On(void)
+   \                     Forward_On:
+     85          {
+     86            P3OUT |= R_FORWARD; 
+   \   000000   ....         JMP     ?Subroutine5
+   \   000002                REQUIRE _A_PBOUT_L
+     87            P3OUT |= L_FORWARD;
+     88          }
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     89          void Forward_Off(void)
+   \                     Forward_Off:
+     90          {
+     91            P3OUT &= ~R_FORWARD;
+   \   000000                REQUIRE ?Subroutine11
+   \   000000                REQUIRE _A_PBOUT_L
+   \   000000                // Fall through to label ?Subroutine11
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine11:
+   \   000000   F2C080002202 BIC.B   #0x80, &0x222
+     92            P3OUT &= ~L_FORWARD; 
+   \   000006   F2C020002202 BIC.B   #0x20, &0x222
+     93          }
+   \   00000C   1001         RETA
+     94          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     95          void Forward_Move(void)
+   \                     Forward_Move:
+     96          {
+     97           Forward_On();                          //trust my process
+   \   000000   ....         JMP     ?Subroutine5
+   \   000002                REQUIRE _A_PBOUT_L
+     98          }
+     99            
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    100          void Run_Straight()
+   \                     Run_Straight:
+    101          {
+    102           switch(state)
+   \   000000   ........     CALLA   #?Subroutine12
+   \                     ??CrossCallReturnLabel_16:
+   \   000004   0D24         JEQ     ??Run_Straight_2
+   \   000006   7E800D00     SUB.B   #0xd, R14
+   \   00000A   0824         JEQ     ??Run_Straight_3
+   \   00000C   5E83         SUB.B   #0x1, R14
+   \   00000E   0424         JEQ     ??Run_Straight_4
+   \   000010   6E82         SUB.B   #0x4, R14
+   \   000012   0720         JNE     ??Run_Straight_1
+    103           {
+    104            case WAIT:                            // Begin
+    105              wait_case();
+   \   000014   ........     BRA     #wait_case
+    106              break;
+    107           
+    108            case START:                           // Begin
+    109              start_case();
+   \                     ??Run_Straight_4:
+   \   000018   ........     BRA     #start_case
+    110              break; 
+    111           
+    112            case RUN:                             // Run
+    113              run_case();
+   \                     ??Run_Straight_3:
+   \   00001C   ........     BRA     #run_case
+    114              break; 
+    115           
+    116            case END:                            // End
+    117              end_case();
+   \                     ??Run_Straight_2:
+   \   000020   ....         JMP     ?Subroutine2
+    118              break; 
+    119           
+    120            default: 
+    121              state=WAIT;
+   \                     ??Run_Straight_1:
+   \   000022                REQUIRE ?Subroutine3
+   \   000022                REQUIRE _A_PBOUT_L
+   \   000022                // Fall through to label ?Subroutine3
+    122              break;
+    123           
+    124            }
+    125          }
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine3:
+   \   000000   F2405700.... MOV.B   #0x57, &state
+   \   000006   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine12:
+   \   000000   5E42....     MOV.B   &state, R14
+   \   000004   7E804500     SUB.B   #0x45, R14
+   \   000008   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    126          void run_circle_case(void)
+   \                     run_circle_case:
+    127          {
+    128            if(time_change)
+   \   000000   C293....     CMP.B   #0x0, &time_change
+   \   000004   1424         JEQ     ??run_circle_case_2
+    129            {
+    130              time_change = 0;
+   \   000006   C243....     MOV.B   #0x0, &time_change
+    131              if(segment_count <= TRAVEL_DISTANCE_CIRCLE)
+   \   00000A   B2903200.... CMP.W   #0x32, &segment_count
+   \   000010   0B34         JGE     ??run_circle_case_3
+    132              {
+    133                if(right_motor_count++ >= RIGHT_COUNT_TIME_CIRCLE)
+   \   000012   ........     CALLA   #?Subroutine9
+   \                     ??CrossCallReturnLabel_12:
+   \   000016   3F900A00     CMP.W   #0xa, R15
+   \   00001A   ........     CALLA   #?Subroutine6
+    134                {
+    135                  P3OUT &= ~R_FORWARD;
+    136                }
+    137                if(left_motor_count++ >= LEFT_COUNT_TIME_CIRCLE)
+   \                     ??CrossCallReturnLabel_6:
+   \   00001E   2F93         CMP.W   #0x2, R15
+   \   000020   ........     CALLA   #?Subroutine4
+    138                {
+    139                  P3OUT &= ~L_FORWARD;
+    140                }
+    141                if(cycle_time >= WHEEL_COUNT_TIME)
+   \                     ??CrossCallReturnLabel_1:
+   \   000024   0428         JNC     ??run_circle_case_2
+    142                {
+    143                  cycle_time = 0;
+   \   000026   ....         JMP     ?Subroutine1
+    144                  right_motor_count = 0;
+    145                  left_motor_count = 0;
+    146                  segment_count++;
+    147                  Forward_Move();
+    148                }
+    149              }
+    150              else
+    151              {
+    152                state = END;
+   \                     ??run_circle_case_3:
+   \   000028   F2404500.... MOV.B   #0x45, &state
+    153              }
+    154            }
+    155          }
+   \                     ??run_circle_case_2:
+   \   00002E   1001         RETA
+   \   000030                REQUIRE _A_PBOUT_L
+    156          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    157          void Run_Circle(void)
+   \                     Run_Circle:
+    158           {
+    159             switch(state)
+   \   000000   ........     CALLA   #?Subroutine12
+   \                     ??CrossCallReturnLabel_17:
+   \   000004   0D24         JEQ     ??Run_Circle_2
+   \   000006   7E800D00     SUB.B   #0xd, R14
+   \   00000A   0824         JEQ     ??Run_Circle_3
+   \   00000C   5E83         SUB.B   #0x1, R14
+   \   00000E   0424         JEQ     ??Run_Circle_4
+   \   000010   6E82         SUB.B   #0x4, R14
+   \   000012   0720         JNE     ??Run_Circle_1
+    160             {
+    161              case WAIT: // Begin
+    162                wait_case();
+   \   000014   ........     BRA     #wait_case
+    163                break;
+    164           
+    165              case START: // Begin
+    166                start_case();
+   \                     ??Run_Circle_4:
+   \   000018   ........     BRA     #start_case
+    167                break; 
+    168           
+    169              case RUN: // Run
+    170                run_circle_case();
+   \                     ??Run_Circle_3:
+   \   00001C   ........     BRA     #run_circle_case
+    171                break; 
+    172           
+    173              case END: // End
+    174                end_case();
+   \                     ??Run_Circle_2:
+   \   000020   ....         JMP     ?Subroutine2
+    175                break; 
+    176           
+    177               default: 
+    178                state=WAIT;
+   \                     ??Run_Circle_1:
+   \   000022   ....         JMP     ?Subroutine3
+   \   000024   0343         NOP
+   \   000026                REQUIRE _A_PBOUT_L
+    179               break;
+    180           
+    181              }
+    182           }
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    183          void run_triangle_case(void)
+   \                     run_triangle_case:
+    184          {
+    185            if(time_change)
+   \   000000   1F42....     MOV.W   &segment_count, R15
+   \   000004   1E42....     MOV.W   &left_motor_count, R14
+   \   000008   C293....     CMP.B   #0x0, &time_change
+   \   00000C   2824         JEQ     ??run_triangle_case_6
+    186            {
+    187              int count=0;
+    188              time_change = 0;
+   \   00000E   C243....     MOV.B   #0x0, &time_change
+   \   000012   7D400700     MOV.B   #0x7, R13
+    189              while(count<=6)
+    190              {
+    191                if(segment_count <= TRAVEL_DISTANCE_TRIANGLEa)                       //TURN 1
+   \   000016   3F900B00     CMP.W   #0xb, R15
+   \   00001A   0734         JGE     ??run_triangle_case_7
+    192                {
+    193                  if(right_motor_count++ >= RIGHT_COUNT_TIME_TRIANGLE)
+   \                     ??run_triangle_case_0:
+   \   00001C   ........     CALLA   #?Subroutine10
+    194                  {
+    195                    P3OUT &= ~R_FORWARD;
+    196                  }
+    197                  if(left_motor_count++ >= LEFT_COUNT_TIME_TRIANGLE)
+    198                  {
+    199                    P3OUT &= ~L_FORWARD;
+    200                  }
+    201                  if(cycle_time >= WHEEL_COUNT_TIME)
+    202                  {
+    203                    cycle_time = 0;
+    204                    right_motor_count = 0;
+    205                    left_motor_count = 0;
+    206                    segment_count++;
+    207                    Forward_Move();
+    208                  }
+    209                }
+   \                     ??CrossCallReturnLabel_13:
+   \   000020   2F92         CMP.W   #0x4, R15
+   \   000022   ........     CALLA   #?Subroutine8
+   \                     ??CrossCallReturnLabel_9:
+   \   000026   0F93         CMP.W   #0x0, R15
+   \   000028   093C         JMP     ??run_triangle_case_4
+    210                else if(segment_count <= TRAVEL_DISTANCE_LEG1)                      //LEG 1
+   \                     ??run_triangle_case_7:
+   \   00002A   3F901100     CMP.W   #0x11, R15
+   \   00002E   1134         JGE     ??run_triangle_case_8
+    211                {
+    212                  if(right_motor_count++ >= RIGHT_COUNT_TIME)
+   \   000030   ........     CALLA   #?Subroutine10
+   \                     ??CrossCallReturnLabel_14:
+   \   000034   0F9D         CMP.W   R13, R15
+   \   000036   ........     CALLA   #?Subroutine8
+    213                  {
+    214                    P3OUT &= ~R_FORWARD;
+    215                  }
+    216                  if(left_motor_count++ >= LEFT_COUNT_TIME)
+   \                     ??CrossCallReturnLabel_10:
+   \   00003A   3F92         CMP.W   #0x8, R15
+   \                     ??run_triangle_case_4:
+   \   00003C   ........     CALLA   #?Subroutine4
+    217                  {
+    218                    P3OUT &= ~L_FORWARD;
+    219                  }
+    220                  if(cycle_time >= WHEEL_COUNT_TIME)
+   \                     ??CrossCallReturnLabel_2:
+   \   000040   0B28         JNC     ??run_triangle_case_5
+    221                  {
+    222                    cycle_time = 0;
+   \   000042   C243....     MOV.B   #0x0, &cycle_time
+    223                    right_motor_count = 0;
+   \   000046   8243....     MOV.W   #0x0, &right_motor_count
+    224                    left_motor_count = 0;
+   \   00004A   0E43         MOV.W   #0x0, R14
+    225                    segment_count++;
+    226                    Forward_Move();
+   \   00004C   ........     CALLA   #?Subroutine5
+    227                  }
+    228                }
+   \                     ??CrossCallReturnLabel_4:
+   \   000050   033C         JMP     ??run_triangle_case_5
+    229                else 
+    230                  state = END;      
+   \                     ??run_triangle_case_8:
+   \   000052   F2404500.... MOV.B   #0x45, &state
+    231                count++;
+    232                segment_count=0;
+   \                     ??run_triangle_case_5:
+   \   000058   0F43         MOV.W   #0x0, R15
+   \   00005A   7D53         ADD.B   #0xff, R13
+    233              }
+   \   00005C   DF23         JNE     ??run_triangle_case_0
+   \                     ??run_triangle_case_6:
+   \   00005E   824E....     MOV.W   R14, &left_motor_count
+   \   000062   824F....     MOV.W   R15, &segment_count
+    234                
+    235            }
+    236          }
+   \   000066   1001         RETA
+   \   000068                REQUIRE _A_PBOUT_L
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine10:
+   \   000000   1F42....     MOV.W   &right_motor_count, R15
+   \   000004   0C4F         MOV.W   R15, R12
+   \   000006   1C53         ADD.W   #0x1, R12
+   \   000008   824C....     MOV.W   R12, &right_motor_count
+   \   00000C   1001         RETA
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine8:
+   \   000000   0338         JL      ??run_triangle_case_2
+   \   000002   F2C080002202 BIC.B   #0x80, &0x222
+   \                     ??run_triangle_case_2:
+   \   000008   0F4E         MOV.W   R14, R15
+   \   00000A   1E53         ADD.W   #0x1, R14
+   \   00000C   1001         RETA
+    237          
+
+   \                                 In  segment CODE, align 2
+    238          void Run_Triangle(void)
+   \                     Run_Triangle:
+    239           {
+    240             switch(state)
+   \   000000   ........     CALLA   #?Subroutine12
+   \                     ??CrossCallReturnLabel_18:
+   \   000004   0C24         JEQ     ??Run_Triangle_2
+   \   000006   7E800D00     SUB.B   #0xd, R14
+   \   00000A   0724         JEQ     ??Run_Triangle_3
+   \   00000C   5E83         SUB.B   #0x1, R14
+   \   00000E   0424         JEQ     ??Run_Triangle_4
+   \   000010   6E82         SUB.B   #0x4, R14
+   \   000012   0620         JNE     ??Run_Triangle_1
+    241             {
+    242              case WAIT: // Begin
+    243                wait_case();
+   \   000014   ........     BRA     #wait_case
+    244                break;
+    245           
+    246              case START: // Begin
+    247                start_case();
+   \                     ??Run_Triangle_4:
+   \   000018   ....         JMP     ?Subroutine0
+    248                break; 
+    249           
+    250              case RUN: // Run
+    251                run_triangle_case();
+   \                     ??Run_Triangle_3:
+   \   00001A   ........     BRA     #run_triangle_case
+    252                break; 
+    253           
+    254              case END: // End
+    255                end_case();
+   \                     ??Run_Triangle_2:
+   \   00001E   ....         JMP     ?Subroutine2
+    256                break; 
+    257           
+    258               default: 
+    259                state=WAIT;
+   \                     ??Run_Triangle_1:
+   \   000020   ....         JMP     ?Subroutine3
+   \   000022   0343         NOP
+   \   000024                REQUIRE _A_PBOUT_L
+    260               break;
+    261           
+    262              }
+    263           }
+    264             
+    265           
+    266           
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Forward_Move
+      0   Forward_Off
+      4   Forward_On
+      4   Run_Circle
+        0   -> run_circle_case
+        0   -> start_case
+        0   -> wait_case
+      4   Run_Straight
+        0   -> run_case
+        0   -> start_case
+        0   -> wait_case
+      4   Run_Triangle
+        0   -> run_triangle_case
+        0   -> wait_case
+      0   end_case
+      4   run_case
+      4   run_circle_case
+      4   run_triangle_case
+      0   start_case
+      4   wait_case
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      20  ?Subroutine0
+      10  ?Subroutine1
+      14  ?Subroutine10
+      14  ?Subroutine11
+      10  ?Subroutine12
+      18  ?Subroutine2
+       8  ?Subroutine3
+      16  ?Subroutine4
+      14  ?Subroutine5
+      22  ?Subroutine6
+      14  ?Subroutine7
+      14  ?Subroutine8
+      14  ?Subroutine9
+       2  Forward_Move
+       0  Forward_Off
+       2  Forward_On
+       1  Last_Time_Sequence
+      38  Run_Circle
+      34  Run_Straight
+      36  Run_Triangle
+       2  _A_PBOUT_L
+       1  cycle_time
+       2  delay_start
+       0  end_case
+       1  event
+       2  left_motor_count
+       2  right_motor_count
+      48  run_case
+      48  run_circle_case
+     104  run_triangle_case
+       2  segment_count
+       0  start_case
+       1  state
+       1  time_change
+      40  wait_case
+
+ 
+ 540 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+  13 bytes in segment DATA16_Z
+ 
+ 540 bytes of CODE memory
+  13 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

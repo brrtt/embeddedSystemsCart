@@ -1,0 +1,155 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.10.1.973/W32 for MSP430           14/Sep/2017  13:36:24
+# Copyright 1996-2017 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 7.10
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\port3.c
+#    Command line  =  
+#        -f C:\Users\jchesebr\AppData\Local\Temp\EWDB66.tmp
+#        ("\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\port3.c"
+#        -lC "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\List" -o
+#        "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\Debug\Obj"
+#        --debug -D__MSP430FR5994__ -e --double=32 --dlib_config "C:\Program
+#        Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\430\lib\dlib\dl430xlsfn.h" --core=430X --data_model=small -Oh
+#        --multiplier=32 --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\List\port3.lst
+#    Object file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\Obj\port3.r43
+#
+###############################################################################
+
+\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\port3.c
+      1          //------------------------------------------------------------------------------
+      2          //
+      3          //  Description: This file contains the Main Routine - "While" Operating System
+      4          //
+      5          //
+      6          //  Jim Carlson
+      7          //  Aug 2017
+      8          //  Built with IAR Embedded Workbench Version: V7.10.2 (8.0.6.4651)
+      9          //------------------------------------------------------------------------------
+     10          
+     11          //------------------------------------------------------------------------------
+     12          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x222
+   \   union <unnamed> _A_PBOUT_L
+   \                     _A_PBOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x224
+   \   union <unnamed> _A_PBDIR_L
+   \                     _A_PBDIR_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x22a
+   \   union <unnamed> _A_PBSEL0_L
+   \                     _A_PBSEL0_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x22c
+   \   union <unnamed> _A_PBSEL1_L
+   \                     _A_PBSEL1_L:
+   \   000000                DS8 2
+     13          #include  "functions.h"
+     14          #include <string.h>
+     15          #include "macros.h"
+     16          
+     17          #define R_FORWARD            (0x80) // P3_8   1000 0000    0111 1111
+     18          #define L_REVERSE            (0x10) // P3_5   0001 0000    1110 1111
+     19          #define L_FORWARD            (0x20) // P3_6   0010 0000    1101 1111
+     20          #define R_REVERSE            (0x40) // P3_7   0100 0000    1011 1111
+     21          
+     22          
+
+   \                                 In  segment CODE, align 2
+     23          void init_port3(void){
+   \                     init_port3:
+     24            P3SEL0 &= ~L_REVERSE;  // Logically AND the inverse #define value with the Peripheral Register P3SEL0  
+   \   000000   F2C010002A02 BIC.B   #0x10, &0x22a
+     25            P3SEL1 &= ~L_REVERSE;  // Logically AND the inverse #define value with the Peripheral Register P3SEL1
+   \   000006   F2C010002C02 BIC.B   #0x10, &0x22c
+     26          
+     27          // The previous 2 lines set the P3SEL0 and P3SEL1 for Bit P3_5 to "0"
+     28          
+     29            P3OUT &= ~L_REVERSE;   // Set the initial value Low so N-FET is off
+   \   00000C   F2C010002202 BIC.B   #0x10, &0x222
+     30            P3DIR |= L_REVERSE;    // Set direction to output
+   \   000012   F2D010002402 BIS.B   #0x10, &0x224
+     31          
+     32            P3SEL0 &= ~L_FORWARD;  // Logically AND the inverse #define value with the Peripheral Register P3SEL0
+   \   000018   F2C020002A02 BIC.B   #0x20, &0x22a
+     33            P3SEL1 &= ~L_FORWARD;  // Logically AND the inverse #define value with the Peripheral Register P3SEL1
+   \   00001E   F2C020002C02 BIC.B   #0x20, &0x22c
+     34            P3OUT &= ~L_FORWARD;   // Set the initial value Low so N-FET is off
+   \   000024   F2C020002202 BIC.B   #0x20, &0x222
+     35            P3DIR |= L_FORWARD;    // Set direction to output
+   \   00002A   F2D020002402 BIS.B   #0x20, &0x224
+     36          
+     37            P3SEL0 &= ~R_REVERSE;  // Logically AND the inverse #define value with the Peripheral Register P3SEL0
+   \   000030   F2C040002A02 BIC.B   #0x40, &0x22a
+     38            P3SEL1 &= ~R_REVERSE;  // Logically AND the inverse #define value with the Peripheral Register P3SEL1
+   \   000036   F2C040002C02 BIC.B   #0x40, &0x22c
+     39            P3OUT &= ~R_REVERSE;   // Set the initial value Low so N-FET is off
+   \   00003C   F2C040002202 BIC.B   #0x40, &0x222
+     40            P3DIR |= R_REVERSE;    // Set direction to output
+   \   000042   F2D040002402 BIS.B   #0x40, &0x224
+     41          
+     42            P3SEL0 &= ~R_FORWARD;  // Logically AND the inverse #define value with the Peripheral Register P3SEL0
+   \   000048   F2C080002A02 BIC.B   #0x80, &0x22a
+     43            P3SEL1 &= ~R_FORWARD;  // Logically AND the inverse #define value with the Peripheral Register P3SEL1
+   \   00004E   F2C080002C02 BIC.B   #0x80, &0x22c
+     44            P3OUT &= ~R_FORWARD;   // Set the initial value Low so N-FET is off
+   \   000054   F2C080002202 BIC.B   #0x80, &0x222
+     45            P3DIR |= R_FORWARD;    // Set direction to output
+   \   00005A   F2D080002402 BIS.B   #0x80, &0x224
+     46          //------------------------------------------------------------------------------
+     47          }
+   \   000060   1001         RETA
+   \   000062                REQUIRE _A_PBSEL0_L
+   \   000062                REQUIRE _A_PBSEL1_L
+   \   000062                REQUIRE _A_PBOUT_L
+   \   000062                REQUIRE _A_PBDIR_L
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   init_port3
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  _A_PBDIR_L
+       2  _A_PBOUT_L
+       2  _A_PBSEL0_L
+       2  _A_PBSEL1_L
+      98  init_port3
+
+ 
+ 98 bytes in segment CODE
+  8 bytes in segment DATA16_AN
+ 
+ 98 bytes of CODE memory
+  0 bytes of DATA memory (+ 8 bytes shared)
+
+Errors: none
+Warnings: none

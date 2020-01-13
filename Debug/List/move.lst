@@ -1,0 +1,184 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.10.1.973/W32 for MSP430           21/Sep/2017  18:10:37
+# Copyright 1996-2017 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 7.10
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\move.c
+#    Command line  =  
+#        -f C:\Users\jchesebr\AppData\Local\Temp\EWBF50.tmp
+#        ("\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\move.c"
+#        -lC "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List" -o
+#        "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\Debug\Obj"
+#        --debug -D__MSP430FR5994__ -e --double=32 --dlib_config "C:\Program
+#        Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\430\lib\dlib\dl430xlsfn.h" --core=430X --data_model=small -Oh
+#        --multiplier=32 --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List\move.lst
+#    Object file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\Obj\move.r43
+#
+###############################################################################
+
+\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\move.c
+      1          //J Barrett Chesebrough
+      2          //move.c
+      3          //movement functions for run_straight, run_rectangle, run_circle, run_figure_eight
+      4          //movement state machines
+      5          
+      6          #include  "msp430.h"
+      7          #include  "functions.h"
+      8          #include <string.h>
+      9          #include "macros.h"
+     10          
+     11          char Last_Time_Sequence;
+     12          char cycle_time;
+     13          char time_change;
+     14          char event;
+     15          int delay_start;
+     16          char state;
+     17          int segment_count;
+     18          int right_motor_count;
+     19          int left_motor_count;
+     20          extern volatile unsigned int Time_Sequence;
+     21          
+     22          void start_case(void)
+     23          {
+     24           cycle_time = 0;
+     25           right_motor_count = 0;
+     26           left_motor_count = 0;
+     27           Forward_On();
+     28           segment_count = 0;
+     29           state = RUN;
+     30          }
+     31          
+     32          
+     33          void wait_case(void)
+     34          {
+     35           if(time_change)
+     36           {
+     37             time_change = 0;
+     38             if(delay_start++ >= WAITING2START)
+     39             {
+     40               delay_start = 0;
+     41               state = START;
+     42             }
+     43           }
+     44          }
+     45          
+     46          void run_case(void)
+     47          {
+     48            if(time_change)
+     49            {
+     50              time_change = 0;
+     51              if(segment_count <= TRAVEL_DISTANCE)
+     52              {
+     53                if(right_motor_count++ >= RIGHT_COUNT_TIME)
+     54                {
+     55                  P3OUT &= ~R_FORWARD;
+     56                }
+     57                if(left_motor_count++ >= LEFT_COUNT_TIME)
+     58                {
+     59                  P3OUT &= ~L_FORWARD;
+     60                }
+     61                if(cycle_time >= WHEEL_COUNT_TIME)
+     62                {
+     63                  cycle_time = 0;
+     64                  right_motor_count = 0;
+     65                  left_motor_count = 0;
+     66                  segment_count++;
+     67                  //Forward_Move();
+     68                }
+     69              }
+     70              else
+     71              {
+     72                state = END;
+     73              }
+     74            }
+     75          }
+     76          
+     77          void end_case(void)
+     78          {
+     79           Forward_Off();
+     80           state = WAIT;
+     81           event = NONE;
+     82          }
+     83          
+     84          void Forward_On(void)
+     85          {
+     86            P3OUT |= R_FORWARD; 
+     87            P3OUT |= L_FORWARD;
+     88          }
+     89          void Forward_Off(void)
+     90          {
+     91            P3OUT &= ~R_FORWARD;
+     92            P3OUT &= ~L_FORWARD; 
+     93          }
+     94          
+     95          void Run_Straight(char event)
+                      ^
+Error[Pe147]: declaration is incompatible with "__cc_version2 void
+          Run_Straight(void)" (declared at line 219 of
+          "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+          04\functions.h")
+     96          {
+     97            if(event==STRAIGHT)
+     98            {
+     99              state=WAIT;
+    100            }
+    101           switch(state)
+    102           {
+    103           case WAIT: // Begin
+    104           wait_case();
+    105           state=START;
+    106           break;
+    107           
+    108           case START: // Begin
+    109           start_case();
+    110           state=RUN;
+    111           break; 
+    112           
+    113           case RUN: // Run
+    114           while(Time_Sequence<=20)
+    115           {
+    116           run_case();
+    117           Time_Sequence++;
+    118           }
+    119           state=END;
+    120           break; 
+    121           
+    122           case END: // End
+    123           end_case();
+    124           break; 
+    125           
+    126           default: break;
+    127           
+    128           }
+    129          }
+    130          
+    131           void Run_Circle(void)
+    132           {
+    133             start_case();
+    134             
+    135           }
+    136          
+    137             
+    138           
+    139           
+
+Errors: 1
+Warnings: none

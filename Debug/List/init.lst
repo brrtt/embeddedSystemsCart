@@ -1,0 +1,171 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.10.1.973/W32 for MSP430           15/Sep/2017  15:00:45
+# Copyright 1996-2017 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 7.10
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\init.c
+#    Command line  =  
+#        -f C:\Users\jchesebr\AppData\Local\Temp\EW42B6.tmp
+#        ("\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\init.c"
+#        -lC "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\List" -o
+#        "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\Debug\Obj"
+#        --debug -D__MSP430FR5994__ -e --double=32 --dlib_config "C:\Program
+#        Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\430\lib\dlib\dl430xlsfn.h" --core=430X --data_model=small -Oh
+#        --multiplier=32 --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\List\init.lst
+#    Object file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework
+#        03\Debug\Obj\init.r43
+#
+###############################################################################
+
+\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Homework 03\init.c
+      1          //J Barrett Chesebrough
+      2          //init.c
+      3          
+      4          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x202
+   \   union <unnamed> _A_PAOUT_L
+   \                     _A_PAOUT_L:
+   \   000000                DS8 2
+      5          #include  "functions.h"
+      6          #include <string.h>
+      7          #include "macros.h"
+      8          
+      9          // Global Variables
+     10          extern char display_line[4][11];
+     11          extern char *display[4];
+     12          extern unsigned char display_mode;
+     13          extern volatile unsigned char display_changed;
+     14          extern volatile unsigned int update_display_count;
+     15          extern volatile unsigned char update_display;
+     16          
+     17          
+
+   \                                 In  segment CODE, align 2
+     18          void Init_Conditions(void){
+   \                     Init_Conditions:
+     19          //------------------------------------------------------------------------------
+     20            int i;
+     21          
+     22            for(i=0;i<11;i++){
+   \   000000   0F43         MOV.W   #0x0, R15
+   \   000002   3E40....     MOV.W   #display_line + 11, R14
+     23              display_line[0][i] = RESET_STATE;
+   \                     ??Init_Conditions_0:
+   \   000006   CF43....     MOV.B   #0x0, display_line(R15)
+     24              display_line[1][i] = RESET_STATE;
+   \   00000A   CE430000     MOV.B   #0x0, 0(R14)
+     25              display_line[2][i] = RESET_STATE;
+   \   00000E   CE430B00     MOV.B   #0x0, 0xb(R14)
+     26              display_line[3][i] = RESET_STATE;
+   \   000012   CE431600     MOV.B   #0x0, 0x16(R14)
+     27            }
+   \   000016   1F53         ADD.W   #0x1, R15
+   \   000018   1E53         ADD.W   #0x1, R14
+   \   00001A   3F900B00     CMP.W   #0xb, R15
+   \   00001E   F33B         JL      ??Init_Conditions_0
+     28            display_line[0][10] = 0;
+   \   000020   C243....     MOV.B   #0x0, &display_line + 10
+     29            display_line[1][10] = 0;
+   \   000024   C243....     MOV.B   #0x0, &display_line + 21
+     30            display_line[2][10] = 0;
+   \   000028   C243....     MOV.B   #0x0, &display_line + 32
+     31            display_line[3][10] = 0;
+   \   00002C   C243....     MOV.B   #0x0, &display_line + 43
+     32          
+     33            display[0] = &display_line[0][0];
+   \   000030   B240........ MOV.W   #display_line, &display
+     34            display[1] = &display_line[1][0];
+   \   000036   B240........ MOV.W   #display_line + 11, &display + 2
+     35            display[2] = &display_line[2][0];
+   \   00003C   B240........ MOV.W   #display_line + 22, &display + 4
+     36            display[3] = &display_line[3][0];
+   \   000042   B240........ MOV.W   #display_line + 33, &display + 6
+     37            update_display = 0;
+   \   000048   C243....     MOV.B   #0x0, &update_display
+     38            update_display_count = 0;
+   \   00004C   8243....     MOV.W   #0x0, &update_display_count
+     39          
+     40          // Interrupts are disabled by default, enable them.
+     41            enable_interrupts();
+   \   000050   ........     BRA     #enable_interrupts
+     42          //------------------------------------------------------------------------------
+     43          }
+     44          
+
+   \                                 In  segment CODE, align 2
+     45          void Init_LEDs(void){
+   \                     Init_LEDs:
+     46          //------------------------------------------------------------------------------
+     47          // LED Configurations
+     48          //------------------------------------------------------------------------------
+     49          // Turns on both LEDs
+     50            P1OUT &= ~RED_LED;
+   \   000000   D2C30202     BIC.B   #0x1, &0x202
+     51            P1OUT &= ~GRN_LED;
+   \   000004   E2C30202     BIC.B   #0x2, &0x202
+     52          //------------------------------------------------------------------------------
+     53          }
+   \   000008   1001         RETA
+   \   00000A                REQUIRE _A_PAOUT_L
+     54          
+
+   \                                 In  segment CODE, align 2
+     55          void Init_Switches(void){
+   \                     Init_Switches:
+     56          //------------------------------------------------------------------------------
+     57          // Sets up ports for switches and enables their interrupts.
+     58            enable_switch_SW1();
+   \   000000   ........     CALLA   #enable_switch_SW1
+     59            enable_switch_SW2();
+   \   000004   ........     BRA     #enable_switch_SW2
+     60          //------------------------------------------------------------------------------
+     61          }
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Init_Conditions
+        0   -> enable_interrupts
+      4   Init_LEDs
+      4   Init_Switches
+        4   -> enable_switch_SW1
+        0   -> enable_switch_SW2
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      84  Init_Conditions
+      10  Init_LEDs
+       8  Init_Switches
+       2  _A_PAOUT_L
+
+ 
+ 102 bytes in segment CODE
+   2 bytes in segment DATA16_AN
+ 
+ 102 bytes of CODE memory
+   0 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

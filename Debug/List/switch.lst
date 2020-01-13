@@ -1,0 +1,246 @@
+###############################################################################
+#
+# IAR C/C++ Compiler V7.10.1.973/W32 for MSP430           26/Sep/2017  14:18:25
+# Copyright 1996-2017 IAR Systems AB.
+# Standalone license - IAR Embedded Workbench for Texas Instruments MSP430, 8K KickStart Edition 7.10
+#
+#    __rt_version  =  3
+#    __double_size =  32
+#    __reg_r4      =  free
+#    __reg_r5      =  free
+#    __pic         =  no
+#    __core        =  430X
+#    __data_model  =  small
+#    __code_model  =  large
+#    Source file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\switch.c
+#    Command line  =  
+#        -f C:\Users\jchesebr\AppData\Local\Temp\EW4961.tmp
+#        ("\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\switch.c"
+#        -lC "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List" -o
+#        "\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\Debug\Obj"
+#        --debug -D__MSP430FR5994__ -e --double=32 --dlib_config "C:\Program
+#        Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\430\lib\dlib\dl430xlsfn.h" --core=430X --data_model=small -Oh
+#        --multiplier=32 --hw_workaround=CPU40 --code_model=large)
+#    Locale        =  English_USA.1252
+#    List file     =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\List\switch.lst
+#    Object file   =  
+#        \\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project
+#        04\Debug\Obj\switch.r43
+#
+###############################################################################
+
+\\ncsu1.uncanet.unca.edu\home\jchesebr\Desktop\Project 04\switch.c
+      1          //J Barrett Chesebrough
+      2          //switch.c
+      3          //switch functions for interrupts. button mapping. 
+      4          
+      5          #include  "msp430.h"
+
+   \                                 In  segment DATA16_AN, at 0x240
+   \   union <unnamed> _A_PCIN_L
+   \                     _A_PCIN_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x242
+   \   union <unnamed> _A_PCOUT_L
+   \                     _A_PCOUT_L:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x246
+   \   union <unnamed> _A_PCREN_L
+   \                     _A_PCREN_L:
+   \   000000                DS8 2
+      6          #include  "functions.h"
+      7          #include <string.h>
+      8          #include "macros.h"
+      9          
+     10          // Global Variables
+     11          extern char display_line[4][11];
+     12          extern char *display[4];
+     13          extern unsigned char display_mode;
+     14          extern volatile unsigned char display_changed;
+     15          extern volatile unsigned int update_display_count;
+     16          extern volatile unsigned char update_display;
+     17          extern volatile char event;
+     18          extern volatile char end;
+     19          
+
+   \                                 In  segment CODE, align 2
+     20          void enable_switch_SW1(void)
+   \                     enable_switch_SW1:
+     21          {
+     22          // Enable switch SW1 interrupt
+     23            P5OUT |= SW1;                // Configure pullup resistor
+   \   000000   F2D040004202 BIS.B   #0x40, &0x242
+     24            P5REN |= SW1;                // Enable pullup resistor
+   \   000006   F2D040004602 BIS.B   #0x40, &0x246
+     25          }
+   \   00000C   1001         RETA
+   \   00000E                REQUIRE _A_PCOUT_L
+   \   00000E                REQUIRE _A_PCREN_L
+     26          
+
+   \                                 In  segment CODE, align 2
+     27          void enable_switch_SW2(void)
+   \                     enable_switch_SW2:
+     28          {
+     29          // Enable switch SW2 interrupt
+     30            P5OUT |= SW2;                // Configure pullup resistor
+   \   000000   F2D020004202 BIS.B   #0x20, &0x242
+     31            P5REN |= SW2;                // Enable pullup resistor
+   \   000006   F2D020004602 BIS.B   #0x20, &0x246
+     32          }
+   \   00000C   1001         RETA
+   \   00000E                REQUIRE _A_PCOUT_L
+   \   00000E                REQUIRE _A_PCREN_L
+     33          
+
+   \                                 In  segment CODE, align 2
+     34          void Switches_Process(void)
+   \                     Switches_Process:
+     35          {
+     36          //  unsigned char trouble;
+     37            if (!(P5IN & SW1))
+   \   000000   F2B040004002 BIT.B   #0x40, &0x240
+   \   000006   0F20         JNE     ??Switches_Process_1
+     38            {
+     39              strcpy(display_line[0], "--------");
+   \   000008   3D40....     MOV.W   #`?<Constant "--------">`, R13
+   \   00000C   ........     CALLA   #?Subroutine2
+     40              update_string(display_line[0], 0);
+     41              strcpy(display_line[1], "triangle ");
+   \                     ??CrossCallReturnLabel_5:
+   \   000010   3D40....     MOV.W   #`?<Constant "triangle ">`, R13
+   \   000014   ........     CALLA   #?Subroutine1
+     42              update_string(display_line[1], 1);
+     43              strcpy(display_line[2], "--------");
+   \                     ??CrossCallReturnLabel_3:
+   \   000018   3D40....     MOV.W   #`?<Constant "--------">`, R13
+   \   00001C   ........     CALLA   #?Subroutine0
+     44              update_string(display_line[3], 3);
+     45              enable_display_update();
+     46              event= TRIANGLE;
+   \                     ??CrossCallReturnLabel_1:
+   \   000020   F2405400.... MOV.B   #0x54, &event
+     47            }
+     48            
+     49            if (!(P5IN & SW2)) 
+   \                     ??Switches_Process_1:
+   \   000026   F2B020004002 BIT.B   #0x20, &0x240
+   \   00002C   0F20         JNE     ??Switches_Process_0
+     50            {
+     51              strcpy(display_line[0], "---------");
+   \   00002E   3D40....     MOV.W   #`?<Constant "---------">`, R13
+   \   000032   ........     CALLA   #?Subroutine2
+     52              update_string(display_line[0], 0);
+     53              strcpy(display_line[1], " circle  ");
+   \                     ??CrossCallReturnLabel_4:
+   \   000036   3D40....     MOV.W   #`?<Constant " circle  ">`, R13
+   \   00003A   ........     CALLA   #?Subroutine1
+     54              update_string(display_line[1], 1);
+     55              strcpy(display_line[2], "---------");
+   \                     ??CrossCallReturnLabel_2:
+   \   00003E   3D40....     MOV.W   #`?<Constant "---------">`, R13
+   \   000042   ........     CALLA   #?Subroutine0
+     56              update_string(display_line[3], 3);
+     57              enable_display_update();
+     58              event=CIRCLE;
+   \                     ??CrossCallReturnLabel_0:
+   \   000046   F2404300.... MOV.B   #0x43, &event
+     59            }
+     60          }
+   \                     ??Switches_Process_0:
+   \   00004C   1001         RETA
+   \   00004E                REQUIRE _A_PCIN_L
+
+   \                                 In  segment CODE, align 2
+   \                     ?Subroutine2:
+   \   000000   3C40....     MOV.W   #display_line, R12
+   \   000004   ........     CALLA   #strcpy
+   \   000008   0D43         MOV.W   #0x0, R13
+   \   00000A   ........     BRA     #update_string
+
+   \                                 In  segment CODE, align 2
+   \                     ?Subroutine1:
+   \   000000   3C40....     MOV.W   #display_line + 11, R12
+   \   000004   ........     CALLA   #strcpy
+   \   000008   1D43         MOV.W   #0x1, R13
+   \   00000A   3C40....     MOV.W   #display_line + 11, R12
+   \   00000E   ........     BRA     #update_string
+
+   \                                 In  segment CODE, align 2
+   \                     ?Subroutine0:
+   \   000000   3C40....     MOV.W   #display_line + 22, R12
+   \   000004   ........     CALLA   #strcpy
+   \   000008   3D400300     MOV.W   #0x3, R13
+   \   00000C   3C40....     MOV.W   #display_line + 33, R12
+   \   000010   ........     CALLA   #update_string
+   \   000014   ........     BRA     #enable_display_update
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "--------">`:
+   \   000000   2D2D2D2D2D2D DC8 "--------"
+   \            2D2D00      
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "triangle ">`:
+   \   000000   747269616E67 DC8 "triangle "
+   \            6C652000    
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "---------">`:
+   \   000000   2D2D2D2D2D2D DC8 "---------"
+   \            2D2D2D00    
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant " circle  ">`:
+   \   000000   20636972636C DC8 " circle  "
+   \            65202000    
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+      4   Switches_Process
+        4   -> enable_display_update
+        8   -> strcpy
+        4   -> update_string
+        8   -> update_string
+      4   enable_switch_SW1
+      4   enable_switch_SW2
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      10  ?<Constant " circle  ">
+       9  ?<Constant "--------">
+      10  ?<Constant "---------">
+      10  ?<Constant "triangle ">
+      24  ?Subroutine0
+      18  ?Subroutine1
+      14  ?Subroutine2
+      78  Switches_Process
+       2  _A_PCIN_L
+       2  _A_PCOUT_L
+       2  _A_PCREN_L
+      14  enable_switch_SW1
+      14  enable_switch_SW2
+
+ 
+ 162 bytes in segment CODE
+   6 bytes in segment DATA16_AN
+  39 bytes in segment DATA16_C
+ 
+ 162 bytes of CODE  memory
+  39 bytes of CONST memory
+   0 bytes of DATA  memory (+ 6 bytes shared)
+
+Errors: none
+Warnings: none
